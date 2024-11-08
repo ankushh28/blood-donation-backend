@@ -44,6 +44,10 @@ routes?.forEach((router) => app.use("/api/rakt", router));
 staticRoutes?.forEach((route) =>
   app.use(route.route, express.static(path.join(__dirname, route.dir)))
 );
+
+app.get('/api', (req, res) => {
+  res.send('Hello from Ankush');
+});
 //Socket connection
 // io.on('connection', (socket) => {
 //   socket.on('register', async (userId) => {
