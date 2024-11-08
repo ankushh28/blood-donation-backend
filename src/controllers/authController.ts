@@ -192,4 +192,18 @@ export class AuthController {
             return res.status(500).json({success: false, message: "Error deleting address", error });
         }
     }
+    static async getUsers(req: Request, res: Response) {
+        try {
+            const users = {
+                "test": "hey"
+            }
+            res.status(200).json({
+              success: true,
+              users,
+            });
+          } catch (error: any) {
+            console.log(error);
+          }
+    }
+
 }
