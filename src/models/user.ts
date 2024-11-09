@@ -34,6 +34,7 @@ export interface IUser extends mongoose.Document {
   userId: string;
   fullname: string;
   dob: Date;
+  email: string;
   age: string;
   avatar: string;
   bloodGroup: string;
@@ -52,6 +53,7 @@ const userSchema = new Schema<IUser>({
   fullname: { type: String, required: true },
   dob: { type: Date, required: true },
   age: { type: String, required: true },
+  email: { type: String, required: true },
   avatar: { type: String, required: true },
   bloodGroup: { type: String, required: true },
   activeDonor: { type: Boolean, default: false },
