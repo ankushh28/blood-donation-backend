@@ -4,13 +4,14 @@ import { createServer } from "http";
 import helmet from "helmet";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes";
+import userRoutes from "./routes/userRoutes";
 import { Server } from 'socket.io';
 import requestRoutes from "./routes/requestRoutes";
 import cookieParser from "cookie-parser";
 import { staticRoutes } from "./middlewares/staticFileMiddleware";
 import path from "path";
 import mongoose from "mongoose";
-import User, { IAddress, IUser } from "./models/user";
+import { IAddress,User, IUser } from "./models/user";
 
 import { connectDB } from "./config/database";
 import { config } from "./config/config";
@@ -41,7 +42,8 @@ app.use(express.urlencoded({ extended: true }));
 
 const routes = [
     authRoutes,
-    requestRoutes
+    requestRoutes,
+    userRoutes
 ];
 routes?.forEach((router) => app.use("/api/rakt", router));
 staticRoutes?.forEach((route) =>

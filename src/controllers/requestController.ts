@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { upload } from "../helper/multer";
-import User, { IAddress, IUser } from "../models/user";
+import { IAddress, IUser, User } from "../models/user";
 import BloodRequest from '../models/bloodRequest';
 import { io } from '../index';
 
@@ -69,6 +69,40 @@ export class BloodRequestController {
             return res.status(200).json({success: true, nearbyRequests});
         } catch (error: any) {
             return res.status(500).json({success: false, message: "Error creating blood request", error: error.message });
+        }
+    }
+
+    static async acceptBloodRequest(req: Request, res: Response) {
+        const { requestId, userId } = req.params;
+        try {
+            const updatedRequest = await BloodRequest.findByIdAndUpdate(
+                requestId,
+                { $addToSet: { donors: userId } },
+                { new: true }
+            ).populate('donors');
+    
+            if (!updatedRequest) {
+                return res.status(404).json({success: false, message: 'Blood request not found' });
+            }
+    
+            res.status(200).json({success: true, message: 'Request accepted', bloodRequest: updatedRequest });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success: false, message: 'An error occurred while accepting the request' });
+        }
+    }
+    
+    static async getDonorsAccepted(req:Request, res: Response){
+        const { requestId } = req.params;
+        try {
+            const bloodRequest = await BloodRequest.findById(requestId).populate('donors');
+            if (!bloodRequest) {
+                return res.status(404).json({ success: false, message: 'Blood request not found' });
+            }
+            res.status(200).json({success: true, donors: bloodRequest.donors });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success: false, message: 'An error occurred while fetching donors' });
         }
     }
 }

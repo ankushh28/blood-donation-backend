@@ -21,6 +21,7 @@ export interface IBloodRequest extends Document {
     isCritical: boolean;
     additionalNote?: string;
     status: "pending" | "fulfilled" | "cancelled";
+    donors: string[];
     createdAt: Date;
 }
 
@@ -47,6 +48,7 @@ const bloodRequestSchema = new Schema<IBloodRequest>({
     isCritical: { type: Boolean, required: true },
     additionalNote: { type: String },
     status: { type: String, enum: ["pending", "fulfilled", "cancelled"], default: "pending" },
+    donors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdAt: { type: Date, default: Date.now },
 });
 bloodRequestSchema.index({ "location.location": "2dsphere" });

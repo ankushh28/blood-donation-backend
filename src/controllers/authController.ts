@@ -4,7 +4,7 @@ import { generateOTP } from "../utils/generateOtp";
 import Otp from "../models/otp";
 import fs from 'fs';
 import { upload } from "../helper/multer";
-import User, { IAddress, IUser } from "../models/user";
+import { IAddress, IUser, User } from "../models/user";
 import { config } from "../config/config";
 var crypto = require('crypto');
 
@@ -205,6 +205,42 @@ export class AuthController {
           } catch (error: any) {
             console.log(error);
           }
+    }
+
+    static async addAddress(req: Request, res: Response) {
+        try {
+            const { userId } = req.params;
+            const { addressLine, city, state, country, postalCode, latitude, longitude, isCurrent } = req.body;
+
+            const updatedUser = await User.findByIdAndUpdate(
+                userId,
+                {
+                    $push: {
+                        addresses: {
+                            addressLine,
+                            city,
+                            state,
+                            country,
+                            postalCode,
+                            isCurrent,
+                            location: {
+                                type: "Point",
+                                coordinates: [longitude, latitude]
+                            }
+                        }
+                    }
+                },
+                { new: true }
+            );
+
+            if (!updatedUser) {
+                return res.status(404).json({success: false, message: "User not found" });
+            }
+
+            res.status(200).json({success: true, message: "Address added successfully", user: updatedUser });
+        } catch (error) {
+            res.status(500).json({success: false, message: "Error adding address", error });
+        }
     }
 
 }

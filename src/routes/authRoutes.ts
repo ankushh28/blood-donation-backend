@@ -9,6 +9,7 @@ router.route("/user/check-user").post(AuthController.checkUserExists);
 router.route("/user/create-user").post(AuthController.createUser);
 router.route("/user/avatar").post(AuthController.uploadAvatar);
 router.route("/user/:userId/addresses/:addressId").put(AuthController.editAddress).delete(AuthController.deleteAddress);
+router.route("/user/:userId/address").post(AuthController.addAddress);
 router.route("/user/users").get(AuthController.getUsers);
 
 export default router;
