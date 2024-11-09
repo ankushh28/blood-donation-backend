@@ -57,8 +57,8 @@ export class AuthController {
 
     static async checkUserExists(req: Request, res: Response) {
         try {
-            const { phone } = req.body;
-            const user = await User.findOne({ phone });
+            const { email } = req.body;
+            const user = await User.findOne({ email });
             if (user) {
                 return res.status(200).json({success: true, exists: true, user });
             }
@@ -69,10 +69,10 @@ export class AuthController {
     }
 
     static async createUser(req: Request, res: Response) {
-        const { fullname, dob, avatar, bloodGroup, gender, weight, phone, activeDonor, addresses, lastDonationDate } = req.body;
+        const { fullname, dob, avatar, bloodGroup, gender, weight, phone, activeDonor, addresses, lastDonationDate, email } = req.body;
       
         try {
-          const user = await User.findOne({ phone });
+          const user = await User.findOne({ email });
           if (user) {
             return res.status(200).json({ exists: true, message: "User already exists", user });
           }
