@@ -23,14 +23,16 @@ const port = process.env.PORT;
 const io = new Server(server);
 export { io };
 app.use(cors());
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+}));
 connectDB();
 app.use(cookieParser());
 app.use(express.json());
 
 app.use(
   cors({
-    origin: config.ALLOWED_DOMAINS?.split(" "),
+    origin: "http://localhost:4200",
     credentials: true,
     optionsSuccessStatus: 200,
   })
