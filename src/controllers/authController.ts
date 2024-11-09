@@ -100,6 +100,7 @@ export class AuthController {
             activeDonor: activeDonor ?? false,
             gender,
             weight,
+            email,
             aadharVerified: false,
             phone,
             lastDonationDate,
