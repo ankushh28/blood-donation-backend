@@ -7,11 +7,12 @@ import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import { Server } from 'socket.io';
 import requestRoutes from "./routes/requestRoutes";
+import notficaitonRoutes from "./routes/master/notificationRoutes";
 import cookieParser from "cookie-parser";
 import { staticRoutes } from "./middlewares/staticFileMiddleware";
 import path from "path";
 import mongoose from "mongoose";
-import { IAddress,User, IUser } from "./models/user";
+import { IAddress, User, IUser } from "./models/user";
 
 import { connectDB } from "./config/database";
 import { config } from "./config/config";
@@ -21,7 +22,14 @@ dotenv.config();
 const app: Express = express();
 const server = createServer(app);
 const port = process.env.PORT;
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:4200",
+    methods: ["GET", "POST"], 
+    allowedHeaders: ["my-custom-header"],
+    credentials: true
+  }
+});
 export { io };
 app.use(cors());
 app.use(helmet({
@@ -41,9 +49,10 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 
 const routes = [
-    authRoutes,
-    requestRoutes,
-    userRoutes
+  authRoutes,
+  requestRoutes,
+  userRoutes,
+  notficaitonRoutes
 ];
 routes?.forEach((router) => app.use("/api/rakt", router));
 staticRoutes?.forEach((route) =>
@@ -53,36 +62,37 @@ staticRoutes?.forEach((route) =>
 app.get('/api', (req, res) => {
   res.send('Hello from Ankush');
 });
-//Socket connection
-// io.on('connection', (socket) => {
-//   socket.on('register', async (userId) => {
-//     try {
-//         const updatedUser = await User.findOneAndUpdate(
-//             { userId },
-//             { socketId: socket.id },
-//             { new: true }
-//         );
+// Socket connection
 
-//         if (updatedUser) {
-//             console.log(`User ${userId} connected with socket ID ${socket.id}`);
-//         } else {
-//             console.log(`User with userId ${userId} not found`);
-//         }
-//     } catch (error) {
-//         console.error('Error updating socketId:', error);
-//     }
-// });
-//   socket.on('disconnect', async () => {
-//       console.log('Client disconnected');
+io.on('connection', (socket) => {
+  socket.on('register', async (userId) => {
+    try {
+      const updatedUser = await User.findOneAndUpdate(
+        { userId },
+        { socketId: socket.id },
+        { new: true }
+      );
 
-//       await User.findOneAndUpdate(
-//           { socketId: socket.id },
-//           { socketId: null },
-//           { new: true }
-//       );
-//   });
-// });
+      if (updatedUser) {
+        console.log(`User ${userId} connected with socket ID ${socket.id}`);
+      } else {
+        console.log(`User with userId ${userId} not found`);
+      }
+    } catch (error) {
+      console.error('Error updating socketId:', error);
+    }
+  });
+  socket.on('disconnect', async () => {
+    console.log('Client disconnected');
+
+    await User.findOneAndUpdate(
+      { socketId: socket.id },
+      { socketId: null },
+      { new: true }
+    );
+  });
+});
 
 server.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server running at http://localhost:${port}`);
 });
