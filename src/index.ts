@@ -24,7 +24,7 @@ const server = createServer(app);
 const port = process.env.PORT;
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:4200",
+    origin: "https://blood-donation-frontend-eight.vercel.app/",
     methods: ["GET", "POST"], 
     allowedHeaders: ["my-custom-header"],
     credentials: true
@@ -41,7 +41,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:4200",
+    origin: "https://blood-donation-frontend-eight.vercel.app/",
     credentials: true,
     optionsSuccessStatus: 200,
   })
