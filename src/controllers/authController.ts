@@ -146,7 +146,12 @@ export class AuthController {
         try {
             const { userId, addressId } = req.params;
             const { addressLine, city, state, country, postalCode, latitude, longitude, isCurrent } = req.body;
-
+            if (isCurrent) {
+                await User.updateOne(
+                    { _id: userId, "addresses.isCurrent": true },
+                    { $set: { "addresses.$[].isCurrent": false } }
+                );
+            }
             const updatedUser = await User.findOneAndUpdate(
                 { _id: userId, "addresses._id": addressId },
                 {
@@ -213,7 +218,7 @@ export class AuthController {
             const { addressLine, city, state, country, postalCode, latitude, longitude, isCurrent } = req.body;
             if (isCurrent) {
                 await User.updateOne(
-                    { _id: userId },
+                    { _id: userId, "addresses.isCurrent": true },
                     { $set: { "addresses.$[].isCurrent": false } }
                 );
             }
