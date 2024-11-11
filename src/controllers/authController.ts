@@ -211,7 +211,12 @@ export class AuthController {
         try {
             const { userId } = req.params;
             const { addressLine, city, state, country, postalCode, latitude, longitude, isCurrent } = req.body;
-
+            if (isCurrent) {
+                await User.updateOne(
+                    { _id: userId },
+                    { $set: { "addresses.$[].isCurrent": false } }
+                );
+            }
             const updatedUser = await User.findByIdAndUpdate(
                 userId,
                 {
