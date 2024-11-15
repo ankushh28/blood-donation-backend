@@ -7,6 +7,7 @@ import { upload } from "../helper/multer";
 import { IAddress, IUser, User } from "../models/user";
 import { config } from "../config/config";
 var crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
 const calculateAge = (dob: Date): string => {
     const birthDate = new Date(dob);
@@ -58,9 +59,10 @@ export class AuthController {
     static async checkUserExists(req: Request, res: Response) {
         try {
             const { email } = req.body;
+            const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '24h' });
             const user = await User.findOne({ email });
             if (user) {
-                return res.status(200).json({success: true, exists: true, user });
+                return res.status(200).json({success: true, exists: true, user, token });
             }
             return res.status(200).json({success: true, exists: false });
         } catch (error: any) {
